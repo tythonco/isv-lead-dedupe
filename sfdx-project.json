@@ -14,5 +14,11 @@
         }
     ],
     "namespace": "",
-    "sfdcLoginUrl": "https://login.salesforce.com"
+    "sfdcLoginUrl": "https://login.salesforce.com",
+    "packageAliases": {
+        "isv-lead-dedupe": "0HoPH00000000OD0AY",
+        "isv-lead-dedupe@0.1.0-1": "04tPH000000jwhNYAQ",
+        "isv-lead-dedupe@0.1.0-2": "04tPH000000jwnpYAA",
+        "isv-lead-dedupe@latest": "04tPH000000jwnpYAA"
+    }
 }
