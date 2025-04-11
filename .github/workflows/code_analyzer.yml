@@ -1,0 +1,74 @@
+name: Code Analyzer
+on:
+    pull_request:
+        types: [opened]
+    issue_comment: # Note: This event will only trigger a workflow run if the workflow file is on the default branch.
+        types: [created]
+jobs:
+    analyze_manual:
+        if: github.event.issue.pull_request && contains(github.event.comment.body, '/scan')
+        runs-on: ubuntu-latest
+        container: salesforce/cli:latest-full
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Install Latest Salesforce Code Analyzer CLI Plugin
+              run: sf plugins install code-analyzer@latest
+
+            - name: Run Salesforce Code Analyzer Scanner
+              id: run-code-analyzer
+              uses: tythonco/run-code-analyzer@main
+              with:
+                  run-arguments: --workspace force-app/ --rule-selector AppExchange --output-file ca_appexchange_results.sarif
+
+            - name: Upload Salesforce Code Analyzer results as PR comment
+              uses: actions/github-script@v7
+              with:
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  script: |
+                      github.rest.issues.createComment({
+                        issue_number: '${{ github.event.issue.number }}',
+                        owner: '${{ github.event.repository.owner.login }}',
+                        repo: '${{ github.event.repository.name }}',
+                        body: `${{ steps.run-code-analyzer.outputs.summary-markdown }}`
+                      });
+
+            - name: Validate
+              if: |
+                  steps.run-code-analyzer.outputs.exit-code > 0 ||
+                  steps.run-code-analyzer.outputs.num-violations > 0
+              run: exit 1
+
+    analyze_auto:
+        if: github.event.action == 'opened'
+        runs-on: ubuntu-latest
+        container: salesforce/cli:latest-full
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Install Latest Salesforce Code Analyzer CLI Plugin
+              run: sf plugins install code-analyzer@latest
+
+            - name: Run Salesforce Code Analyzer Scanner
+              id: run-code-analyzer
+              uses: tythonco/run-code-analyzer@main
+              with:
+                  run-arguments: --workspace force-app/ --rule-selector AppExchange --output-file ca_appexchange_results.sarif
+
+            - name: Upload Salesforce Code Analyzer results as PR comment
+              uses: actions/github-script@v7
+              with:
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  script: |
+                      github.rest.issues.createComment({
+                        issue_number: '${{ github.event.number }}',
+                        owner: '${{ github.event.repository.owner.login }}',
+                        repo: '${{ github.event.repository.name }}',
+                        body: `${{ steps.run-code-analyzer.outputs.summary-markdown }}`
+                      });
+
+            - name: Validate
+              if: |
+                  steps.run-code-analyzer.outputs.exit-code > 0 ||
+                  steps.run-code-analyzer.outputs.num-violations > 0
+              run: exit 1

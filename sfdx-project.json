@@ -1,0 +1,18 @@
+{
+    "packageDirectories": [
+        {
+            "path": "force-app/isv-lead-dedupe",
+            "default": true,
+            "package": "isv-lead-dedupe",
+            "versionNumber": "0.1.0.NEXT",
+            "versionName": "mvp",
+            "dependencies": [
+                {
+                    "package": "04t30000001DX1FAAW"
+                }
+            ]
+        }
+    ],
+    "namespace": "",
+    "sfdcLoginUrl": "https://login.salesforce.com"
+}
