@@ -12,6 +12,7 @@ server.key
 .sfdx/
 .sf/
 mdapioutput/
+.vim-force.com
 
 # LWC VSCode autocomplete
 jsconfig.json
