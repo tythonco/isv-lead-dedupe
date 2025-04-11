@@ -39,6 +39,33 @@ private class LicenseSelectorTest {
     }
 
     @IsTest
+    static void tesetFindAllRelatedLicensesById() {
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            // Get test data
+            sfLma__License__c license = [
+                SELECT Id
+                FROM sfLma__License__c
+                WITH USER_MODE
+                LIMIT 1
+            ];
+
+            // Test
+            Test.startTest();
+            Map<Id, sfLma__License__c> results = LicenseSelector.findAllRelatedLicensesById(
+                new Set<Id>{ license.Id }
+            );
+            Test.stopTest();
+
+            // Verify
+            System.assertEquals(1, results.size(), 'Should return one license');
+            System.assert(
+                results.containsKey(license.Id),
+                'Should contain the test license'
+            );
+        }
+    }
+
+    @IsTest
     static void testGetLicensesByIds() {
         System.runAs(new User(Id = UserInfo.getUserId())) {
             // Get test data

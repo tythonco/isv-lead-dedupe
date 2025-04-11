@@ -31,9 +31,17 @@ private class QueueableNewSubscriberHandlerTest {
         }
 
         System.runAs(new User(Id = UserInfo.getUserId())) {
-            //Create test package
+            // Create test package
             sfLma__Package__c pkg = new sfLMa__Package__c(Name = 'Test');
             insert as user pkg;
+
+            //Create test lead
+            Lead l = new Lead(
+                LastName = 'Test',
+                Company = 'Test',
+                Email = 'test@test.com'
+            );
+            insert as user l;
 
             // Create parent and child licenses
             sfLma__License__c parentLicense = new sfLma__License__c(
@@ -45,6 +53,7 @@ private class QueueableNewSubscriberHandlerTest {
             sfLma__License__c childLicense = new sfLma__License__c(
                 sfLma__Subscriber_Org_ID__c = '00D123child',
                 Parent_License__c = parentLicense.Id,
+                sfLma__Lead__c = l.Id,
                 sfLma__Seats__c = -1
             );
             insert as user childLicense;
@@ -86,7 +95,12 @@ private class QueueableNewSubscriberHandlerTest {
             Test.stopTest();
 
             // Verify
-            //System.assertEquals(, , '');
+            licensesById = LicenseSelector.getLicensesByIds(licenseIds);
+            System.assertEquals(
+                null,
+                licensesById.values()[0].sfLma__Lead__c,
+                'Lead should have been cleared from child license'
+            );
         }
     }
 }
